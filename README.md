@@ -1,4 +1,4 @@
-# Nutro Bot disrupt of asses
+# Nutro Bot
 
 Nutro Bot is a Telegram bot designed to assist users with nutrition-related queries. It leverages an AI agent to provide personalized recommendations and insights.
 
