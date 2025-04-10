@@ -5,6 +5,16 @@ from settings import settings  # Import the settings module
 from pydantic import ValidationError
 from schemes.schemes import MenuParams
 import json
+from langchain.agents.mrkl.output_parser import MRKLOutputParser
+
+class CustomOutputParser(MRKLOutputParser):
+    def parse(self, text: str):
+        try:
+            # Attempt to parse the output
+            return super().parse(text)
+        except Exception as e:
+            print("Parsing failed:", e)
+            return {"error": "Parsing failed", "raw_output": text}
 
 
 @tool
@@ -72,8 +82,14 @@ llm = GigaChat(
     verify_ssl_certs=settings.verify_ssl_certs,
 )
 
-# Initialize the agent
-agent = initialize_agent(tools, llm, agent="zero-shot-react-description", verbose=True)
+# Pass the custom parser to the agent
+agent = initialize_agent(
+    tools,
+    llm,
+    agent="zero-shot-react-description",
+    verbose=True,
+    output_parser=CustomOutputParser(),
+)
 
 # Run the agent
 if __name__ == "__main__":
@@ -90,5 +106,9 @@ if __name__ == "__main__":
             "portions": 2,
         }
     )
-    response = agent.run(f"Generate a menu with these parameters: {example_input}")
+    response = agent.run(
+        f"Generate a menu with these parameters: {example_input}. "
+        "Please provide the output in JSON format."
+    )
+    print("Raw LLM Output:", response)
     print(response)
