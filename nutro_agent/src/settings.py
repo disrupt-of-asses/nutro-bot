@@ -1,30 +1,30 @@
+import logging
 from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
     # API Configuration
-    api_key: str
-    api_secret: str
-    oauth_url: str
-    authorization_header: str
-    rquid: str
-
-    # Payload Configuration
-    scope: str
+    gigachat_credentials: str
     gigachat_scope: str = "GIGACHAT_API_PERS"
     gigachat_model: str = 'GigaChat'
-    log_level: str = "INFO"
+    log_level: str = "INFO"  # Default log level
     debug_mode: bool = False
     verify_ssl_certs: bool = False
-
-    @property
-    def gigachat_credentials(self) -> str:
-        # Use the API_KEY directly as the credentials
-        return self.api_key
 
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
 
+    def configure_logging(self):
+        """
+        Configures the logging settings based on the log_level.
+        """
+        logging.basicConfig(
+            level=getattr(logging, self.log_level.upper(), logging.INFO),
+            format="%(asctime)s - %(levelname)s - %(message)s",
+        )
 
+
+# Initialize settings and configure logging
 settings = Settings()
+settings.configure_logging()

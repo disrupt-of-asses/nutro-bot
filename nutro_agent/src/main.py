@@ -1,21 +1,14 @@
+import logging
 from langchain.agents import initialize_agent, Tool
 from langchain.tools import tool
 from langchain_gigachat.chat_models import GigaChat
 from settings import settings  # Import the settings module
 from pydantic import ValidationError
-from schemes.schemes import MenuParams
+from schemes.schemes import MenuParams, MenuOutputParser
 import json
-from langchain.agents.mrkl.output_parser import MRKLOutputParser
 
-class CustomOutputParser(MRKLOutputParser):
-    def parse(self, text: str):
-        try:
-            # Attempt to parse the output
-            return super().parse(text)
-        except Exception as e:
-            print("Parsing failed:", e)
-            return {"error": "Parsing failed", "raw_output": text}
-
+# Logging is already configured in settings.py
+logger = logging.getLogger(__name__)
 
 @tool
 def generate_menu_tool(params: str) -> str:
@@ -88,12 +81,13 @@ agent = initialize_agent(
     llm,
     agent="zero-shot-react-description",
     verbose=True,
-    output_parser=CustomOutputParser(),
+    output_parser=MenuOutputParser(),
+    handle_parsing_errors=True,  # Add this parameter
 )
 
 # Run the agent
 if __name__ == "__main__":
-    print("Nutro AI Agent is running...")
+    logger.info("Nutro AI Agent is running...")
     # Example JSON input for menu generation
     example_input = json.dumps(
         {
@@ -108,7 +102,6 @@ if __name__ == "__main__":
     )
     response = agent.run(
         f"Generate a menu with these parameters: {example_input}. "
-        "Please provide the output in JSON format."
     )
-    print("Raw LLM Output:", response)
-    print(response)
+    logger.info("Raw LLM Output: %s", response)
+    logger.info(response)
