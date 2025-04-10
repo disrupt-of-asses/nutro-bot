@@ -15,7 +15,7 @@ def generate_menu_tool(params: str) -> str:
     """
     try:
         # Parse and validate the JSON input using Pydantic
-        user_params = MenuParams.parse_raw(params)
+        user_params = MenuParams.model_validate_json(params)
 
         # Generate a mock menu (replace this with actual logic)
         menu = []
