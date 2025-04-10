@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  nutro_bot:
+    build:
+      context: ./nutro_bot
+    container_name: nutro_bot
+    ports:
+      - "5000:5000" # Adjust the port as needed
+    volumes:
+      - ./nutro_bot:/app
+    working_dir: /app
+    command: python src/main.py
+    depends_on:
+      - nutro_agent
+
+  nutro_agent:
+    build:
+      context: ./nutro_agent
+    container_name: nutro_agent
+    ports:
+      - "5001:5001" # Adjust the port as needed
+    volumes:
+      - ./nutro_agent:/app
+    working_dir: /app
+    command: python src/main.py
