@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class MenuParams(BaseModel):
     gender: str
     weight: float
