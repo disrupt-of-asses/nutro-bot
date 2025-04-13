@@ -16,15 +16,10 @@ bot = Bot(token=settings.api_token)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
-# Define states for the conversation
+# Dynamically create states from UserParams fields
 class UserData(StatesGroup):
-    gender = State()
-    weight = State()
-    age = State()
-    activity = State()
-    complexity = State()
-    period = State()
-    portions = State()
+    for field in UserParams.__fields__:
+        locals()[field] = State()
 
 # Start command handler
 @dp.message_handler(commands=['start'])
